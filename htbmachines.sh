@@ -35,7 +35,6 @@ function messagePanel(){
 #Help Panel
 function helpPanel(){
 
-	clear
 	echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"	
 	echo -e "\n${yellowColour}[${endColour}${redColour}!${endColour}${yellowColour}]${endColour}${turquoiseColour} Uso:${endColour}\n"
 	echo -e "\t${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour}${purpleColour} h) ${endColour}${grayColour}Desplegar este panel de ayuda${endColour} 💡"
@@ -109,7 +108,9 @@ function searchMachine(){
 		echo -e "\n$machineName"
 		echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
 	else
+	echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"	
 		echo -e "\n${yellowColour}[${endColour}${redColour}!${endColour}${yellowColour}]${endColour} 🚫 ${redColour}La maquina seleccionada no existe${endColour} 🚫\n"
+	echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"	
 	fi
 }
 
