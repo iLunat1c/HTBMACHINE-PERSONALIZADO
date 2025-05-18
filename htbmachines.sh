@@ -22,8 +22,19 @@ trap ctrl_c INT
 #Global Variables
 main_url="https://htbmachines.github.io/"
 
+#Message Panel
+function messagePanel(){
+
+	echo -e "\n/////////////////////////////////////////////////////////////////////////////////////////////////\n"
+	echo -e "\nHola y bienvenido al htbmachines personalizado por ${blueColour}ILUNATIC${endColour}"
+	echo -e "Porfavor haga un ${yellowColour}'-h'${endColour} despues de ejecutar la herramienta para entrar en el panel de ayuda ${greenColour};)${endColour}\n"
+	echo -e "\n/////////////////////////////////////////////////////////////////////////////////////////////////\n"
+
+}
+
 #Help Panel
 function helpPanel(){
+
 	echo -e "\n//////////////////////////////////////////////////////////////////"
 	echo -e "\n${yellowColour}[${endColour}${redColour}!${endColour}${yellowColour}]${endColour}${turquoiseColour} Uso:${endColour}\n"
 	echo -e "\t${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour}${purpleColour} h) ${endColour}${grayColour}Desplegar este panel de ayuda${endColour} 💡"
@@ -53,7 +64,8 @@ function updateDownloadfiles(){
 		tput civis
 		echo -e "\n${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour} 📁 ${greenColour}El Archivo Ya Existe${endColour} 📁\n"
 		echo -e "\n${greenColour}///////////////////////////////////////////////////////////////${endColour}\n$(ls -la | grep "bundle.js")\n${redColour}//////////////////////////////////////////////////////////////${endColour}\n"
-		echo -e "\n[+] 🔎 Comprobando por actualizaciones... 🔎\n"
+		sleep 1
+		echo -e "\n${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour} 🔎 ${grayColour}Comprobando por actualizaciones...${endColour} 🔎\n"
 		sleep 4
 		tput cnorm
 
@@ -77,16 +89,18 @@ declare -i parameter_counter=0
 #Arguments
 while getopts "uhm:" arg; do
 	case $arg in
-		h) ;;
-		m) machineName="$OPTARG"; let parameter_counter+=1;;
-		u) let parameter_counter+=2;;
+		h) let parameter_counter+=1;;
+		m) machineName="$OPTARG"; let parameter_counter+=2;;
+		u) let parameter_counter+=3;;
 	esac
 done
 
 if [ $parameter_counter -eq 1 ]; then
-	searchMachine $machineName
+	helpPanel
 elif [ $parameter_counter -eq 2 ]; then
+	searchMachine $machineName
+elif [ $parameter_counter -eq 3 ]; then
 	updateDownloadfiles
 else
-	helpPanel
+	messagePanel
 fi
