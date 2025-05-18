@@ -40,6 +40,7 @@ function helpPanel(){
 	echo -e "\t${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour}${purpleColour} h) ${endColour}${grayColour}Desplegar este panel de ayuda${endColour} 💡"
 	echo -e "\t${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour}${purpleColour} m) ${endColour}${grayColour}Buscar por el nombre de alguna máquina${endColour} 💻"
 	echo -e "\t${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour}${purpleColour} u) ${endColour}${grayColour}Descargar u obtener actualizaciones necesarias${endColour} 🔧"
+	echo -e "\t${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour}${purpleColour} i) ${endColour}${grayColour}Obtener el nombre de la maquina por su direccion IP 🌐${endColour}"
 	echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"	
 
 }
@@ -114,15 +115,32 @@ function searchMachine(){
 	fi
 }
 
+#IP SEARCH
+function ipSearch(){
+	ipAddress="$1"
+	ipAddress_name="$(cat bundle.js | grep "ip: \"$ipAddress\"" -B 4 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',')"
+
+	if [ $ipAddress_name ]; then
+		echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+		echo -e "\n${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour} ${grayColour}El nombre de la máquina de la dirreccion ip${endColour}${blueColour} $ipAddress${endColour} ${grayColour}es:${endColour}${redColour} $ipAddress_name${endColour}\n"
+		echo -e "--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+	else
+		echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+		echo -e "\n${yellowColour}[${endColour}${redColour}!${endColour}${yellowColour}]${endColour} ${grayColour}No se encontro esa dirreccion IP${endColour}\n"
+		echo -e "--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+	fi
+}
+
 #Indicators
 declare -i parameter_counter=0
 
 #Arguments
-while getopts "uhm:" arg; do
+while getopts "uhm:i:" arg; do
 	case $arg in
 		h) let parameter_counter+=1;;
 		m) machineName="$OPTARG"; let parameter_counter+=2;;
 		u) let parameter_counter+=3;;
+		i) ipAddress="$OPTARG"; let parameter_counter+=4;;
 	esac
 done
 
@@ -132,6 +150,8 @@ elif [ $parameter_counter -eq 2 ]; then
 	searchMachine $machineName
 elif [ $parameter_counter -eq 3 ]; then
 	updateDownloadfiles
+elif [ $parameter_counter -eq 4 ]; then
+	ipSearch $ipAddress
 else
 	messagePanel
 fi
