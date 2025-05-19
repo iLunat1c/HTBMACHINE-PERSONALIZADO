@@ -41,6 +41,7 @@ function helpPanel(){
 	echo -e "\t${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour}${purpleColour} m) ${endColour}${grayColour}Buscar por el nombre de alguna máquina${endColour} 💻"
 	echo -e "\t${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour}${purpleColour} u) ${endColour}${grayColour}Descargar u obtener actualizaciones necesarias${endColour} 🔧"
 	echo -e "\t${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour}${purpleColour} i) ${endColour}${grayColour}Obtener el nombre de la maquina por su direccion IP 🌐${endColour}"
+	echo -e "\t${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour}${purpleColour} o) ${endColour}${grayColour}Obtener el sistema operativo de las maquinas 🖥️${endColour}"
 	echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"	
 
 }
@@ -61,6 +62,8 @@ function updateDownloadfiles(){
 		echo -e "\n${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour} ✅ ${greenColour}El archivo necesario ha sido descargado:${endColour}${grayColour} bundle.js${endColour} ✅\n"
 		echo -e "\n${greenColour}//////////////////////////////////////////////////////////////${endColour}\n$(ls -la | grep "bundle.js")\n${redColour}/////////////////////////////////////////////////////////////${endColour}\n"
 	echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"	
+		sleep 3
+		clear
 		tput cnorm
 
 	else
@@ -91,6 +94,8 @@ function updateDownloadfiles(){
 			echo -e "\n${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour} 🔧 ${greenColour}Se ha actualizado el archivo correctamente${endColour} 🔧\n"
 		fi
 	echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"	
+		sleep 3
+		clear
 		tput cnorm
 
 	fi
@@ -101,6 +106,7 @@ function updateDownloadfiles(){
 #Search Machine
 function searchMachine(){
 
+	ipAddress_name=machineName
 	machineName="$1"
 	machineName="$(cat bundle.js | awk "/name: \"$machineName\"/,/resuelta: /" | grep -vE "id: |sku: |resuelta: " | tr -d '"' | tr -d ',' | sed 's/^ */[+] /')"
 
@@ -111,6 +117,7 @@ function searchMachine(){
 	else
 	echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"	
 		echo -e "\n${yellowColour}[${endColour}${redColour}!${endColour}${yellowColour}]${endColour} 🚫 ${redColour}La maquina seleccionada no existe${endColour} 🚫\n"
+		echo -e "\n${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour}${grayColour} Asegurate de haber puesto bien las mayusculas y minusculas, si no sabes el nombre de ninguna maquina... recomendamos buscar por os${endColour}\n"
 	echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"	
 	fi
 }
@@ -123,6 +130,7 @@ function ipSearch(){
 	if [ $ipAddress_name ]; then
 		echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
 		echo -e "\n${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour} ${grayColour}El nombre de la máquina de la dirreccion ip${endColour}${blueColour} $ipAddress${endColour} ${grayColour}es:${endColour}${redColour} $ipAddress_name${endColour}\n"
+		searchMachine $ipAddress_name
 		echo -e "--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
 	else
 		echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
@@ -131,16 +139,35 @@ function ipSearch(){
 	fi
 }
 
+#OS Search
+function osSearch(){
+	os="$1"
+	os_names="$(cat bundle.js | grep "so: \"$os\"" -B 4 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)"
+
+	if [ "$os_names" ]; then
+		echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+		echo -e "\n${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour} ${grayColour}Los sistemas operativos de${endColour} $os${grayColour} son:${endColour} \n\n$os_names\n"
+		echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+
+	else
+		echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+		echo -e "\n${yellowColour}[${endColour}${redColour}!${endColour}${yellowColour}]${endColour} 🚫 ${redColour}No existe el sistema operativo, pusiste bien las mayusculas y minusculas?${endColour} 🚫\n"
+		echo -e "\n${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour} ${grayColour}Solo existen sistemas operativos Linux y Windows${endColour}\n"
+		echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+	fi
+}
+
 #Indicators
 declare -i parameter_counter=0
 
 #Arguments
-while getopts "uhm:i:" arg; do
+while getopts "uhm:i:o:" arg; do
 	case $arg in
 		h) let parameter_counter+=1;;
 		m) machineName="$OPTARG"; let parameter_counter+=2;;
 		u) let parameter_counter+=3;;
 		i) ipAddress="$OPTARG"; let parameter_counter+=4;;
+		o) os="$OPTARG"; let parameter_counter+=5;;
 	esac
 done
 
@@ -152,6 +179,8 @@ elif [ $parameter_counter -eq 3 ]; then
 	updateDownloadfiles
 elif [ $parameter_counter -eq 4 ]; then
 	ipSearch $ipAddress
+elif [ $parameter_counter -eq 5 ]; then
+	osSearch $os
 else
 	messagePanel
 fi
