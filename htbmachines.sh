@@ -43,6 +43,7 @@ function helpPanel(){
 	echo -e "\t${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour}${purpleColour} i) ${endColour}${grayColour}Obtener el nombre de la maquina por su direccion IP 🌐${endColour}"
 	echo -e "\t${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour}${purpleColour} o) ${endColour}${grayColour}Obtener el sistema operativo de las maquinas 🖥️${endColour}"
 	echo -e "\t${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour}${purpleColour} y) ${endColour}${grayColour}Obtener el tutorial de la máquina 🎥${endColour}"
+	echo -e "\t${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour}${purpleColour} s) ${endColour}${grayColour}Buscar las maquinas con la skill proporcionada 🎯${endColour}"
 	echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"	
 
 }
@@ -174,11 +175,28 @@ function youtubeTutorials(){
 	fi
 }
 
+#Skill Searcher
+function skillSearcher(){
+	skill="$1"
+	skill_name="$(cat bundle.js | grep "skills: \"$skill" -B 6 -i | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)"
+
+	if [ "skill_name" ]; then
+		echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+		echo -e "\n${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour} ${grayColour}La skill se puede encontrar en las siguientes maquinas:${endColour}\n"
+		echo -e "\n$skill_name\n"
+		echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+	else
+		echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+		echo -e "\n${yellowColour}[${endColour}${redColour}!${endColour}${yellowColour}]${endColour} ❌ ${redColour}No hay maquinas con la skill${endColour} ❌\n"
+		echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+	fi
+}
+
 #Indicators
 declare -i parameter_counter=0
 
 #Arguments
-while getopts "uhm:i:o:y:" arg; do
+while getopts "uhm:i:o:y:s:" arg; do
 	case $arg in
 		h) let parameter_counter+=1;;
 		m) machineName="$OPTARG"; let parameter_counter+=2;;
@@ -186,6 +204,7 @@ while getopts "uhm:i:o:y:" arg; do
 		i) ipAddress="$OPTARG"; let parameter_counter+=4;;
 		o) os="$OPTARG"; let parameter_counter+=5;;
 		y) machineName="$OPTARG"; let parameter_counter+=6;;
+		s) skill="$OPTARG"; let parameter_counter+=7;;
 	esac
 done
 
@@ -201,6 +220,8 @@ elif [ $parameter_counter -eq 5 ]; then
 	osSearch $os
 elif [ $parameter_counter -eq 6 ]; then
 	youtubeTutorials $machineName
+elif [ $parameter_counter -eq 7 ]; then
+	skillSearcher "$skill"
 else
 	messagePanel
 fi
