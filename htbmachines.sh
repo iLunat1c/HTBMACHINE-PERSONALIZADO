@@ -42,6 +42,7 @@ function helpPanel(){
 	echo -e "\t${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour}${purpleColour} u) ${endColour}${grayColour}Descargar u obtener actualizaciones necesarias${endColour} 🔧"
 	echo -e "\t${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour}${purpleColour} i) ${endColour}${grayColour}Obtener el nombre de la maquina por su direccion IP 🌐${endColour}"
 	echo -e "\t${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour}${purpleColour} o) ${endColour}${grayColour}Obtener el sistema operativo de las maquinas 🖥️${endColour}"
+	echo -e "\t${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour}${purpleColour} y) ${endColour}${grayColour}Obtener el tutorial de la máquina 🎥${endColour}"
 	echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"	
 
 }
@@ -157,17 +158,34 @@ function osSearch(){
 	fi
 }
 
+#Youtube Links
+function youtubeTutorials(){
+	machineName="$1"
+	machineyoutube="$(cat bundle.js | grep "name: \"$machineName\"" -A 10 | grep "youtube: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',')"
+
+	if [ "$machineyoutube" ]; then
+		echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+		echo -e "\n${yellowColour}[${endColour}${greenColour}+${endColour}${yellowColour}]${endColour} ${grayColour}El link de youtube para la maquina${endColour} ${blueColour}$machineName${endColour} ${grayColour}es:${endColour} ${blueColour}$machineyoutube${endColour}\n"
+		echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+	else
+		echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+		echo -e "\n${yellowColour}[${endColour}${redColour}!${endColour}${yellowColour}]${endColour} ${redColour}No se encontro la maquina proporcionada${endColour}\n"
+		echo -e "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+	fi
+}
+
 #Indicators
 declare -i parameter_counter=0
 
 #Arguments
-while getopts "uhm:i:o:" arg; do
+while getopts "uhm:i:o:y:" arg; do
 	case $arg in
 		h) let parameter_counter+=1;;
 		m) machineName="$OPTARG"; let parameter_counter+=2;;
 		u) let parameter_counter+=3;;
 		i) ipAddress="$OPTARG"; let parameter_counter+=4;;
 		o) os="$OPTARG"; let parameter_counter+=5;;
+		y) machineName="$OPTARG"; let parameter_counter+=6;;
 	esac
 done
 
@@ -181,6 +199,8 @@ elif [ $parameter_counter -eq 4 ]; then
 	ipSearch $ipAddress
 elif [ $parameter_counter -eq 5 ]; then
 	osSearch $os
+elif [ $parameter_counter -eq 6 ]; then
+	youtubeTutorials $machineName
 else
 	messagePanel
 fi
